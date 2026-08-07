@@ -1,0 +1,135 @@
+{% extends "intake/base.html" %}
+
+{% block content %}
+<div class="mb-3">
+    <a
+        href="{% url 'intake:invitation-dashboard' invitation.token %}"
+    >
+        ← Back
+    </a>
+</div>
+
+<form
+    method="post"
+    enctype="multipart/form-data"
+>
+    {% csrf_token %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h4">
+                {% if question.pk %}
+                    Edit question
+                {% else %}
+                    New question
+                {% endif %}
+            </h1>
+
+            {{ form.non_field_errors }}
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Question
+                </label>
+
+                {{ form.body }}
+                {{ form.body.errors }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Question image
+                </label>
+
+                {{ form.image }}
+                {{ form.image.errors }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Notes
+                </label>
+
+                {{ form.teacher_notes }}
+                {{ form.teacher_notes.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h2 class="h5">
+                Alternatives
+            </h2>
+
+            <p class="text-muted">
+                Mark exactly one alternative as correct.
+            </p>
+
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
+
+            {% for option_form in formset %}
+                <div class="border rounded p-3 mb-3">
+                    {{ option_form.id }}
+                    {{ option_form.position }}
+
+                    <h3 class="h6">
+                        Option {{ forloop.counter }}
+                    </h3>
+
+                    <div class="mb-2">
+                        {{ option_form.text }}
+                        {{ option_form.text.errors }}
+                    </div>
+
+                    <div class="mb-2">
+                        <label>
+                            Image
+                        </label>
+
+                        {{ option_form.image }}
+                        {{ option_form.image.errors }}
+                    </div>
+
+                    <div class="form-check mb-2">
+                        {{ option_form.is_correct }}
+
+                        <label class="form-check-label">
+                            Correct answer
+                        </label>
+                    </div>
+
+                    {% if option_form.instance.pk %}
+                        <div class="form-check">
+                            {{ option_form.DELETE }}
+
+                            <label class="form-check-label">
+                                Remove this option
+                            </label>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button
+            type="submit"
+            name="save_draft"
+            class="btn btn-outline-primary"
+        >
+            Save draft
+        </button>
+
+        <button
+            type="submit"
+            name="submit"
+            class="btn btn-success"
+        >
+            Submit question
+        </button>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "intake/base.html" %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h1 class="h3">
+            {{ invitation.collection.title }}
+        </h1>
+
+        <p class="mb-1">
+            <strong>Teacher:</strong>
+            {{ invitation.teacher_name }}
+        </p>
+
+        <p class="mb-1">
+            <strong>Discipline:</strong>
+            {{ invitation.discipline }}
+        </p>
+
+        <p class="mb-3">
+            <strong>Expected questions:</strong>
+            {{ invitation.expected_questions }}
+        </p>
+
+        {% if invitation.collection.instructions %}
+            <div class="alert alert-info">
+                {{ invitation.collection.instructions|linebreaks }}
+            </div>
+        {% endif %}
+
+        <a
+            class="btn btn-primary"
+            href="{% url 'intake:question-create' invitation.token %}"
+        >
+            Add question
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5">
+            Your questions
+        </h2>
+
+        <p>
+            Submitted:
+            {{ submitted_count }}
+            /
+            {{ invitation.expected_questions }}
+        </p>
+
+        {% if questions %}
+            <div class="list-group">
+                {% for question in questions %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>
+                                    Question {{ forloop.counter }}
+                                </strong>
+
+                                <div class="text-muted">
+                                    {{ question.body|truncatechars:100 }}
+                                </div>
+
+                                <span
+                                    class="
+                                        badge
+                                        {% if question.status == 'submitted' %}
+                                            text-bg-success
+                                        {% else %}
+                                            text-bg-secondary
+                                        {% endif %}
+                                    "
+                                >
+                                    {{ question.get_status_display }}
+                                </span>
+                            </div>
+
+                            {% if question.status == "draft" %}
+                                <div>
+                                    <a
+                                        class="btn btn-sm btn-outline-primary"
+                                        href="{% url 'intake:question-edit' invitation.token question.pk %}"
+                                    >
+                                        Edit
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">
+                No questions created yet.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
