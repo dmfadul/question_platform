@@ -1,0 +1,25 @@
+from django.urls import path
+
+from . import views
+
+
+app_name = "intake"
+
+
+urlpatterns = [
+    path(
+        "invite/<uuid:token>/",
+        views.invitation_dashboard,
+        name="invitation-dashboard",
+    ),
+    path(
+        "invite/<uuid:token>/questions/new/",
+        views.question_create,
+        name="question-create",
+    ),
+    path(
+        "invite/<uuid:token>/questions/<int:question_id>/edit/",
+        views.question_edit,
+        name="question-edit",
+    ),
+]
