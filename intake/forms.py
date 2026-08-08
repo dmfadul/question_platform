@@ -41,7 +41,7 @@ class QuestionForm(forms.ModelForm):
 
         if not body and not image and not existing_image:
             raise ValidationError(
-                "The question must contain text, an image, or both."
+                "A questão deve conter texto, uma imagem ou ambos."
             )
 
         return cleaned_data
@@ -100,7 +100,7 @@ class BaseOptionFormSet(BaseInlineFormSet):
             if not has_content:
                 if form.cleaned_data.get("is_correct"):
                     raise ValidationError(
-                        "A blank option cannot be marked as correct."
+                        "Uma opção em branco não pode ser marcada como correta."
                     )
 
                 continue
@@ -110,14 +110,14 @@ class BaseOptionFormSet(BaseInlineFormSet):
             if form.cleaned_data.get("is_correct"):
                 correct_count += 1
 
-        if len(filled_options) < 2:
+        if len(filled_options) != 5:
             raise ValidationError(
-                "Add at least two alternatives."
+                "Adicione exatamente cinco alternativas."
             )
 
         if correct_count != 1:
             raise ValidationError(
-                "Mark exactly one alternative as correct."
+                "Marque exatamente uma alternativa como correta."
             )
 
 
@@ -127,9 +127,9 @@ OptionFormSet = inlineformset_factory(
     form=OptionForm,
     formset=BaseOptionFormSet,
     extra=5,
-    min_num=2,
-    max_num=8,
+    min_num=5,
+    max_num=5,
     validate_min=True,
     validate_max=True,
-    can_delete=True,
+    can_delete=False,
 )

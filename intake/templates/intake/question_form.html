@@ -5,7 +5,7 @@
     <a
         href="{% url 'intake:invitation-dashboard' invitation.token %}"
     >
-        ← Back
+        ← Voltar
     </a>
 </div>
 
@@ -19,9 +19,9 @@
         <div class="card-body">
             <h1 class="h4">
                 {% if question.pk %}
-                    Edit question
+                    Editar questão
                 {% else %}
-                    New question
+                    Nova questão
                 {% endif %}
             </h1>
 
@@ -29,7 +29,7 @@
 
             <div class="mb-3">
                 <label class="form-label">
-                    Question
+                    Questão
                 </label>
 
                 {{ form.body }}
@@ -38,7 +38,7 @@
 
             <div class="mb-3">
                 <label class="form-label">
-                    Question image
+                    Imagem da questão
                 </label>
 
                 {{ form.image }}
@@ -47,7 +47,7 @@
 
             <div class="mb-3">
                 <label class="form-label">
-                    Notes
+                    Observações do professor
                 </label>
 
                 {{ form.teacher_notes }}
@@ -59,11 +59,11 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h2 class="h5">
-                Alternatives
+                Alternativas
             </h2>
 
             <p class="text-muted">
-                Mark exactly one alternative as correct.
+                Marque exatamente uma alternativa como correta.
             </p>
 
             {{ formset.management_form }}
@@ -75,7 +75,7 @@
                     {{ option_form.position }}
 
                     <h3 class="h6">
-                        Option {{ forloop.counter }}
+                        Alternativa {{ forloop.counter }}
                     </h3>
 
                     <div class="mb-2">
@@ -85,7 +85,7 @@
 
                     <div class="mb-2">
                         <label>
-                            Image
+                            Imagem
                         </label>
 
                         {{ option_form.image }}
@@ -96,7 +96,7 @@
                         {{ option_form.is_correct }}
 
                         <label class="form-check-label">
-                            Correct answer
+                            Alternativa correta
                         </label>
                     </div>
 
@@ -105,7 +105,7 @@
                             {{ option_form.DELETE }}
 
                             <label class="form-check-label">
-                                Remove this option
+                                Remover esta opção
                             </label>
                         </div>
                     {% endif %}
@@ -120,7 +120,7 @@
             name="save_draft"
             class="btn btn-outline-primary"
         >
-            Save draft
+            Salvar rascunho
         </button>
 
         <button
@@ -128,7 +128,7 @@
             name="submit"
             class="btn btn-success"
         >
-            Submit question
+            Enviar questão
         </button>
     </div>
 </form>

@@ -8,17 +8,17 @@
         </h1>
 
         <p class="mb-1">
-            <strong>Teacher:</strong>
+            <strong>Professor:</strong>
             {{ invitation.teacher_name }}
         </p>
 
         <p class="mb-1">
-            <strong>Discipline:</strong>
+            <strong>Disciplina:</strong>
             {{ invitation.discipline }}
         </p>
 
         <p class="mb-3">
-            <strong>Expected questions:</strong>
+            <strong>Questões esperadas:</strong>
             {{ invitation.expected_questions }}
         </p>
 
@@ -32,7 +32,7 @@
             class="btn btn-primary"
             href="{% url 'intake:question-create' invitation.token %}"
         >
-            Add question
+            Adicionar questão
         </a>
     </div>
 </div>
@@ -40,11 +40,11 @@
 <div class="card shadow-sm">
     <div class="card-body">
         <h2 class="h5">
-            Your questions
+            Suas questões
         </h2>
 
         <p>
-            Submitted:
+            Enviadas:
             {{ submitted_count }}
             /
             {{ invitation.expected_questions }}
@@ -57,7 +57,7 @@
                         <div class="d-flex justify-content-between">
                             <div>
                                 <strong>
-                                    Question {{ forloop.counter }}
+                                    Questão {{ forloop.counter }}
                                 </strong>
 
                                 <div class="text-muted">
@@ -84,7 +84,7 @@
                                         class="btn btn-sm btn-outline-primary"
                                         href="{% url 'intake:question-edit' invitation.token question.pk %}"
                                     >
-                                        Edit
+                                        Editar
                                     </a>
                                 </div>
                             {% endif %}
@@ -94,7 +94,7 @@
             </div>
         {% else %}
             <p class="text-muted">
-                No questions created yet.
+                Nenhuma questão criada ainda.
             </p>
         {% endif %}
     </div>
