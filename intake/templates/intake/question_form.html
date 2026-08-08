@@ -56,10 +56,6 @@
                     Enunciado
                 </label>
 
-                <p class="field-help">
-                    Digite o texto completo da questão.
-                </p>
-
                 {{ form.body }}
                 {{ form.body.errors }}
             </div>
@@ -96,7 +92,7 @@
                     </h2>
 
                     <p class="text-muted mb-0">
-                        Preencha pelo menos duas alternativas e marque
+                        Preencha pelo menos quatro alternativas e marque
                         exatamente uma como correta.
                     </p>
                 </div>
@@ -145,17 +141,6 @@
 
 
                         <div class="option-field">
-                            <label
-                                class="form-label"
-                                for="{{ option_form.image.id_for_label }}"
-                            >
-                                Imagem
-                            </label>
-
-                            <p class="field-help">
-                                Opcional.
-                            </p>
-
                             {{ option_form.image }}
                             {{ option_form.image.errors }}
                         </div>
