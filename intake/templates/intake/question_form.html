@@ -1,13 +1,17 @@
 {% extends "intake/base.html" %}
 
+
 {% block content %}
-<div class="mb-3">
+
+<div class="back-navigation">
     <a
         href="{% url 'intake:invitation-dashboard' invitation.token %}"
     >
-        ← Voltar
+        <span aria-hidden="true">←</span>
+        Voltar para minhas questões
     </a>
 </div>
+
 
 <form
     method="post"
@@ -15,121 +19,212 @@
 >
     {% csrf_token %}
 
-    <div class="card shadow-sm mb-4">
+
+    <div class="card question-main-card mb-4">
         <div class="card-body">
-            <h1 class="h4">
-                {% if question.pk %}
-                    Editar questão
-                {% else %}
-                    Nova questão
-                {% endif %}
-            </h1>
+
+            <div class="page-heading">
+                <div>
+                    <span class="page-eyebrow">
+                        {{ invitation.discipline }}
+                    </span>
+
+                    <h1 class="h3 mb-1">
+                        {% if question.pk %}
+                            Editar questão
+                        {% else %}
+                            Nova questão
+                        {% endif %}
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Insira o enunciado e, se necessário,
+                        uma imagem para acompanhar a questão.
+                    </p>
+                </div>
+            </div>
+
 
             {{ form.non_field_errors }}
 
-            <div class="mb-3">
-                <label class="form-label">
-                    Questão
+
+            <div class="question-field-group">
+                <label
+                    class="form-label"
+                    for="{{ form.body.id_for_label }}"
+                >
+                    Enunciado
                 </label>
+
+                <p class="field-help">
+                    Digite o texto completo da questão.
+                </p>
 
                 {{ form.body }}
                 {{ form.body.errors }}
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">
+
+            <div class="question-field-group mb-0">
+                <label
+                    class="form-label"
+                    for="{{ form.image.id_for_label }}"
+                >
                     Imagem da questão
                 </label>
+
+                <p class="field-help">
+                    Opcional. Use apenas quando a imagem fizer parte
+                    do enunciado.
+                </p>
 
                 {{ form.image }}
                 {{ form.image.errors }}
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">
-                    Observações do professor
-                </label>
-
-                {{ form.teacher_notes }}
-                {{ form.teacher_notes.errors }}
-            </div>
         </div>
     </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h2 class="h5">
-                Alternativas
-            </h2>
 
-            <p class="text-muted">
-                Marque exatamente uma alternativa como correta.
-            </p>
+    <div class="card alternatives-section mb-4">
+        <div class="card-body">
+
+            <div class="section-heading alternatives-heading">
+                <div>
+                    <h2 class="h4 mb-1">
+                        Alternativas
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Preencha pelo menos duas alternativas e marque
+                        exatamente uma como correta.
+                    </p>
+                </div>
+            </div>
+
 
             {{ formset.management_form }}
             {{ formset.non_form_errors }}
 
-            {% for option_form in formset %}
-                <div class="border rounded p-3 mb-3">
-                    {{ option_form.id }}
-                    {{ option_form.position }}
 
-                    <h3 class="h6">
-                        Alternativa {{ forloop.counter }}
-                    </h3>
+            <div class="options-list">
 
-                    <div class="mb-2">
-                        {{ option_form.text }}
-                        {{ option_form.text.errors }}
-                    </div>
+                {% for option_form in formset %}
 
-                    <div class="mb-2">
-                        <label>
-                            Imagem
-                        </label>
+                    <div class="option-card">
+                        {{ option_form.id }}
+                        {{ option_form.position }}
 
-                        {{ option_form.image }}
-                        {{ option_form.image.errors }}
-                    </div>
 
-                    <div class="form-check mb-2">
-                        {{ option_form.is_correct }}
+                        <div class="option-card-heading">
 
-                        <label class="form-check-label">
-                            Alternativa correta
-                        </label>
-                    </div>
-
-                    {% if option_form.instance.pk %}
-                        <div class="form-check">
-                            {{ option_form.DELETE }}
-
-                            <label class="form-check-label">
-                                Remover esta opção
-                            </label>
+                        {% cycle 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' as option_letter silent %}
+                        
+                        <div class="option-title">
+                            Alternativa
                         </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                                                
+                        <div class="option-number">
+                            {{ option_letter }}
+                        </div>
+
+                        </div>
+
+
+                        <div class="option-field">
+                            <label
+                                class="form-label"
+                                for="{{ option_form.text.id_for_label }}"
+                            >
+                                Texto
+                            </label>
+
+                            {{ option_form.text }}
+                            {{ option_form.text.errors }}
+                        </div>
+
+
+                        <div class="option-field">
+                            <label
+                                class="form-label"
+                                for="{{ option_form.image.id_for_label }}"
+                            >
+                                Imagem
+                            </label>
+
+                            <p class="field-help">
+                                Opcional.
+                            </p>
+
+                            {{ option_form.image }}
+                            {{ option_form.image.errors }}
+                        </div>
+
+
+                        <div class="option-controls">
+
+                            <div class="correct-answer-control">
+                                {{ option_form.is_correct }}
+
+                                <label
+                                    for="{{ option_form.is_correct.id_for_label }}"
+                                >
+                                    Alternativa correta
+                                </label>
+                            </div>
+
+
+                            {% if option_form.instance.pk %}
+                                <div class="remove-option-control">
+                                    {{ option_form.DELETE }}
+
+                                    <label
+                                        for="{{ option_form.DELETE.id_for_label }}"
+                                    >
+                                        Remover esta alternativa
+                                    </label>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
         </div>
     </div>
 
-    <div class="d-flex gap-2">
-        <button
-            type="submit"
-            name="save_draft"
-            class="btn btn-outline-primary"
-        >
-            Salvar rascunho
-        </button>
 
-        <button
-            type="submit"
-            name="submit"
-            class="btn btn-success"
+    <div class="form-actions">
+        <a
+            class="btn btn-light"
+            href="{% url 'intake:invitation-dashboard' invitation.token %}"
         >
-            Enviar questão
-        </button>
+            Cancelar
+        </a>
+
+
+        <div class="form-actions-right">
+            <button
+                type="submit"
+                name="save_draft"
+                class="btn btn-outline-primary"
+            >
+                Salvar rascunho
+            </button>
+
+
+            <button
+                type="submit"
+                name="submit"
+                class="btn btn-success"
+            >
+                Enviar questão
+            </button>
+        </div>
     </div>
+
 </form>
+
 {% endblock %}

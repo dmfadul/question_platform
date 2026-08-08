@@ -11,22 +11,13 @@ class QuestionForm(forms.ModelForm):
         fields = (
             "body",
             "image",
-            "teacher_notes",
         )
 
         widgets = {
             "body": forms.Textarea(
                 attrs={
                     "rows": 8,
-                    "placeholder": "Enter the question...",
-                }
-            ),
-            "teacher_notes": forms.Textarea(
-                attrs={
-                    "rows": 3,
-                    "placeholder": (
-                        "Optional notes for the test organizer"
-                    ),
+                    "placeholder": "Digite o enunciado da questão...",
                 }
             ),
         }

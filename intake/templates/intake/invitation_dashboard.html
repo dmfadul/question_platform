@@ -1,102 +1,206 @@
 {% extends "intake/base.html" %}
 
+
 {% block content %}
-<div class="card shadow-sm mb-4">
+
+<div class="card invitation-summary-card mb-4">
     <div class="card-body">
-        <h1 class="h3">
-            {{ invitation.collection.title }}
-        </h1>
+        <div class="page-heading">
+            <div>
+                <span class="page-eyebrow">
+                    Envio de questões
+                </span>
 
-        <p class="mb-1">
-            <strong>Professor:</strong>
-            {{ invitation.teacher_name }}
-        </p>
+                <h1 class="h3 mb-1">
+                    {{ invitation.collection.title }}
+                </h1>
 
-        <p class="mb-1">
-            <strong>Disciplina:</strong>
-            {{ invitation.discipline }}
-        </p>
+                <p class="page-subtitle">
+                    Confira seus dados e acompanhe suas questões abaixo.
+                </p>
+            </div>
+        </div>
 
-        <p class="mb-3">
-            <strong>Questões esperadas:</strong>
-            {{ invitation.expected_questions }}
-        </p>
+
+        <div class="invitation-details">
+            <div class="invitation-detail">
+                <span class="detail-label">
+                    Professor
+                </span>
+
+                <strong>
+                    {{ invitation.teacher_name }}
+                </strong>
+            </div>
+
+
+            <div class="invitation-detail">
+                <span class="detail-label">
+                    Disciplina
+                </span>
+
+                <strong>
+                    {{ invitation.discipline }}
+                </strong>
+            </div>
+
+
+            <div class="invitation-detail">
+                <span class="detail-label">
+                    Questões esperadas
+                </span>
+
+                <strong>
+                    {{ invitation.expected_questions }}
+                </strong>
+            </div>
+        </div>
+
 
         {% if invitation.collection.instructions %}
-            <div class="alert alert-info">
-                {{ invitation.collection.instructions|linebreaks }}
+            <div class="collection-instructions">
+                <div class="instructions-title">
+                    Instruções
+                </div>
+
+                <div class="instructions-content">
+                    {{ invitation.collection.instructions|linebreaks }}
+                </div>
             </div>
         {% endif %}
 
-        <a
-            class="btn btn-primary"
-            href="{% url 'intake:question-create' invitation.token %}"
-        >
-            Adicionar questão
-        </a>
+
+        <div class="mt-4">
+            <a
+                class="btn btn-primary"
+                href="{% url 'intake:question-create' invitation.token %}"
+            >
+                Adicionar questão
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h2 class="h5">
-            Suas questões
-        </h2>
 
-        <p>
-            Enviadas:
-            {{ submitted_count }}
-            /
-            {{ invitation.expected_questions }}
-        </p>
+<div class="card question-list-card">
+    <div class="card-body">
+
+        <div class="section-heading">
+            <div>
+                <h2 class="h5 mb-1">
+                    Suas questões
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Questões criadas para esta disciplina.
+                </p>
+            </div>
+
+            <div class="submission-counter">
+                <span>
+                    Enviadas
+                </span>
+
+                <strong>
+                    {{ submitted_count }}
+                    /
+                    {{ invitation.expected_questions }}
+                </strong>
+            </div>
+        </div>
+
 
         {% if questions %}
-            <div class="list-group">
-                {% for question in questions %}
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong>
-                                    Questão {{ forloop.counter }}
-                                </strong>
+            <div class="question-list">
 
-                                <div class="text-muted">
-                                    {{ question.body|truncatechars:100 }}
+                {% for question in questions %}
+                    <div class="question-list-item">
+
+                        <div
+                            class="
+                                d-flex
+                                justify-content-between
+                                align-items-start
+                                gap-3
+                                w-100
+                            "
+                        >
+                            <div class="question-list-content">
+                                <div class="question-list-title">
+                                    Questão {{ forloop.counter }}
                                 </div>
 
-                                <span
-                                    class="
-                                        badge
-                                        {% if question.status == 'submitted' %}
-                                            text-bg-success
-                                        {% else %}
-                                            text-bg-secondary
-                                        {% endif %}
-                                    "
-                                >
-                                    {{ question.get_status_display }}
-                                </span>
+
+                                <div class="question-preview">
+                                    {% if question.body %}
+                                        {{ question.body|truncatechars:130 }}
+                                    {% else %}
+                                        Questão sem texto.
+                                    {% endif %}
+                                </div>
+
+
+                                <div class="question-meta">
+                                    <span
+                                        class="
+                                            badge
+                                            {% if question.status == 'submitted' %}
+                                                status-submitted
+                                            {% else %}
+                                                status-draft
+                                            {% endif %}
+                                        "
+                                    >
+                                        {{ question.get_status_display }}
+                                    </span>
+
+                                    {% if question.image %}
+                                        <span class="question-image-indicator">
+                                            Possui imagem
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
 
+
                             {% if question.status == "draft" %}
-                                <div>
-                                    <a
-                                        class="btn btn-sm btn-outline-primary"
-                                        href="{% url 'intake:question-edit' invitation.token question.pk %}"
-                                    >
-                                        Editar
-                                    </a>
-                                </div>
+                                <a
+                                    class="
+                                        btn
+                                        btn-sm
+                                        btn-outline-primary
+                                        flex-shrink-0
+                                    "
+                                    href="{% url 'intake:question-edit' invitation.token question.pk %}"
+                                >
+                                    Editar
+                                </a>
                             {% endif %}
                         </div>
+
                     </div>
                 {% endfor %}
+
             </div>
+
         {% else %}
-            <p class="text-muted">
-                Nenhuma questão criada ainda.
-            </p>
+
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    ?
+                </div>
+
+                <h3>
+                    Nenhuma questão criada
+                </h3>
+
+                <p>
+                    Clique em "Adicionar questão" para começar.
+                </p>
+            </div>
+
         {% endif %}
     </div>
 </div>
+
 {% endblock %}
