@@ -8,6 +8,11 @@ app_name = "intake"
 
 urlpatterns = [
     path(
+    "manage/collections/<int:collection_id>/questions/",
+    views.collection_questions,
+    name="collection-questions",
+    ),
+    path(
         "invite/<uuid:token>/",
         views.invitation_dashboard,
         name="invitation-dashboard",

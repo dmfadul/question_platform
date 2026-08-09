@@ -2,10 +2,46 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .forms import OptionFormSet, QuestionForm
-from .models import Question
+from .models import Collection, Question
 from .services import get_valid_invitation
+
+
+@staff_member_required
+def collection_questions(request, collection_id):
+    collection = get_object_or_404(
+        Collection,
+        pk=collection_id,
+    )
+
+    questions = (
+        Question.objects
+        .filter(
+            invitation__collection=collection,
+            status=Question.Status.SUBMITTED,
+        )
+        .select_related(
+            "invitation",
+            "invitation__collection",
+        )
+        .prefetch_related("options")
+        .order_by(
+            "invitation__discipline__name",
+            "invitation__teacher__name",
+            "id",
+        )
+    )
+
+    return render(
+        request,
+        "intake/collection_questions.html",
+        {
+            "collection": collection,
+            "questions": questions,
+        },
+    )
 
 
 def invitation_dashboard(request, token):
