@@ -8,6 +8,11 @@ app_name = "intake"
 
 urlpatterns = [
     path(
+        "manage/collections/<int:collection_id>/questions.json",
+        views.collection_questions_json,
+        name="collection-questions-json",
+    ),
+    path(
         "manage/collections/",
         views.collection_list,
         name="collection-list",

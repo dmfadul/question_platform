@@ -7,7 +7,30 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .forms import OptionFormSet, QuestionForm
 from .models import Collection, Question
 from .services import get_valid_invitation
+from .exporters import get_submitted_questions
+from django.http import JsonResponse
 
+
+@staff_member_required
+def collection_questions_json(request, collection_id):
+    collection = get_object_or_404(
+        Collection,
+        pk=collection_id,
+    )
+
+    questions = get_submitted_questions(
+        collection=collection,
+    )
+
+    return JsonResponse(
+        {
+            "collection": {
+                "id": collection.id,
+                "title": collection.title,
+            },
+            "questions": questions,
+        }
+    )
 
 @staff_member_required
 def collection_list(request):
