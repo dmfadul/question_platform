@@ -33,6 +33,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     os.getenv("SITE_HOST", "127.0.0.1"),
+    "localhost",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
