@@ -1,0 +1,36 @@
+{% extends "intake/base.html" %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    Collections
+</h1>
+
+<div class="list-group">
+
+    {% for collection in collections %}
+
+        <a
+            href="{% url 'intake:collection-questions' collection.id %}"
+            class="list-group-item list-group-item-action"
+        >
+            <strong>
+                {{ collection.title }}
+            </strong>
+
+            <div class="text-muted">
+                Created {{ collection.created_at }}
+            </div>
+        </a>
+
+    {% empty %}
+
+        <div class="alert alert-info">
+            No collections yet.
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

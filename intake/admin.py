@@ -63,8 +63,24 @@ class CollectionAdmin(admin.ModelAdmin):
         "title",
         "deadline",
         "is_open",
+        "submitted_questions_link",
         "created_at",
     )
+
+    @admin.display(description="Questions")
+    def submitted_questions_link(self, collection):
+        if not collection.pk:
+            return "-"
+
+        url = reverse(
+            "intake:collection-questions",
+            args=[collection.pk],
+        )
+
+        return format_html(
+            '<a href="{}">View questions</a>',
+            url,
+        )
 
     list_filter = ("is_open",)
 

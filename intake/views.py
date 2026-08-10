@@ -10,6 +10,19 @@ from .services import get_valid_invitation
 
 
 @staff_member_required
+def collection_list(request):
+    collections = Collection.objects.order_by("-created_at")
+
+    return render(
+        request,
+        "intake/collection_list.html",
+        {
+            "collections": collections,
+        },
+    )
+
+
+@staff_member_required
 def collection_questions(request, collection_id):
     collection = get_object_or_404(
         Collection,
