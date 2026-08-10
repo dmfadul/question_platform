@@ -30,7 +30,7 @@
 
             {% if question.body %}
                 <div class="mb-3">
-                    {{ question.body|linebreaks }}
+                    {{ question.body| safe }}
                 </div>
             {% endif %}
 

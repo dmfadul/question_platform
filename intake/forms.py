@@ -17,10 +17,11 @@ class QuestionForm(forms.ModelForm):
             "body": forms.Textarea(
                 attrs={
                     "rows": 8,
-                    "placeholder": "Digite o enunciado da questão...",
+                    "class": "tinymce-question",
                 }
             ),
         }
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -53,7 +54,7 @@ class OptionForm(forms.ModelForm):
             "text": forms.Textarea(
                 attrs={
                     "rows": 3,
-                    "placeholder": "Option text",
+                    "class": "tinymce-option",
                 }
             ),
         }
