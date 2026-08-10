@@ -64,6 +64,7 @@ class CollectionAdmin(admin.ModelAdmin):
         "deadline",
         "is_open",
         "submitted_questions_link",
+        "json_export_link",
         "created_at",
     )
 
@@ -79,6 +80,18 @@ class CollectionAdmin(admin.ModelAdmin):
 
         return format_html(
             '<a href="{}">View questions</a>',
+            url,
+        )
+    
+    @admin.display(description="Export")
+    def json_export_link(self, collection):
+        url = reverse(
+            "intake:collection-questions-json",
+            args=[collection.pk],
+        )
+
+        return format_html(
+            '<a href="{}">JSON</a>',
             url,
         )
 

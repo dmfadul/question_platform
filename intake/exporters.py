@@ -13,7 +13,7 @@ def get_submitted_questions(collection=None):
         .prefetch_related("options")
         .order_by(
             "invitation__discipline",
-            "invitation__teacher_name",
+            "invitation__teacher__name",
             "id",
         )
     )
