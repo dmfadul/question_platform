@@ -62,11 +62,11 @@
                                 {{ forloop.counter }}.
                             </strong>
 
-                            {{ option.text|linebreaksbr }}
+                            {{ option.text|safe }}
 
                             {% if option.is_correct %}
                                 <span class="badge text-bg-success">
-                                    Correct
+                                    Correta
                                 </span>
                             {% endif %}
                         </div>

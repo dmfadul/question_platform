@@ -53,7 +53,7 @@
                     class="form-label"
                     for="{{ form.body.id_for_label }}"
                 >
-                    Enunciado (NÃO é preciso enumerar a questão, apenas insira o texto)
+                    (NÃO é preciso enumerar a questão, apenas insira o texto)
                 </label>
 
                 {{ form.body }}
@@ -96,12 +96,10 @@
                         exatamente uma como correta.
                     </p>
                     <p class="text-muted mb-0">
-                    
                         (NÃO é necessário enumerar as alternativas, apenas insira o texto)
                     </p>
                 </div>
             </div>
-
 
             {{ formset.management_form }}
             {{ formset.non_form_errors }}
@@ -129,7 +127,6 @@
                         </div>
 
                         </div>
-
 
                         <div class="option-field">
                             <label
@@ -195,13 +192,13 @@
 
 
         <div class="form-actions-right">
-            <button
+            {% comment %} <button
                 type="submit"
                 name="save_draft"
                 class="btn btn-outline-primary"
             >
                 Salvar rascunho
-            </button>
+            </button> {% endcomment %}
 
 
             <button
@@ -226,7 +223,7 @@
     tinymce.init({
         selector: ".tinymce-question",
 
-        height: 350,
+        height: 450,
 
         menubar: false,
 
@@ -237,6 +234,22 @@
             "bold italic underline | " +
             "superscript subscript | " +
             "bullist numlist | " +
+            "removeformat"
+    });
+</script>
+
+<script>
+    tinymce.init({
+        selector: ".tinymce-option",
+
+        height: 350,
+
+        menubar: false,
+
+        toolbar:
+            "undo redo | " +
+            "bold italic underline | " +
+            "superscript subscript | " +
             "removeformat"
     });
 </script>

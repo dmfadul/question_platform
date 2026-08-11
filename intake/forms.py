@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet, inlineformset_factory
-
+from django.utils.html import strip_tags
 from .models import Option, Question
 
 
@@ -26,12 +26,13 @@ class QuestionForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        body = cleaned_data.get("body", "").strip()
-        image = cleaned_data.get("image")
+        body = cleaned_data.get("body", "")
+        plain_body = strip_tags(body).strip() if body else ""
 
+        image = cleaned_data.get("image")
         existing_image = self.instance.image if self.instance.pk else None
 
-        if not body and not image and not existing_image:
+        if not plain_body and not image and not existing_image:
             raise ValidationError(
                 "A questão deve conter texto, uma imagem ou ambos."
             )
@@ -77,7 +78,8 @@ class BaseOptionFormSet(BaseInlineFormSet):
             if form.cleaned_data.get("DELETE"):
                 continue
 
-            text = form.cleaned_data.get("text", "").strip()
+            text = form.cleaned_data.get("text", "")
+            plain_text = strip_tags(text).strip() if text else ""
             uploaded_image = form.cleaned_data.get("image")
             existing_image = (
                 form.instance.image
@@ -86,7 +88,7 @@ class BaseOptionFormSet(BaseInlineFormSet):
             )
 
             has_content = bool(
-                text or uploaded_image or existing_image
+                plain_text or uploaded_image or existing_image
             )
 
             if not has_content:
