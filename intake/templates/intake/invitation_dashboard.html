@@ -68,16 +68,6 @@
                 </div>
             </div>
         {% endif %}
-
-
-        <div class="mt-4">
-            <a
-                class="btn btn-primary"
-                href="{% url 'intake:question-create' invitation.token %}"
-            >
-                Adicionar questão
-            </a>
-        </div>
     </div>
 </div>
 
@@ -95,7 +85,14 @@
                     Questões criadas para esta disciplina.
                 </p>
             </div>
-
+            <div class="mt-4">
+                <a
+                    class="btn btn-primary"
+                    href="{% url 'intake:question-create' invitation.token %}"
+                >
+                    Adicionar questão
+                </a>
+            </div>
             <div class="submission-counter">
                 <span>
                     Enviadas

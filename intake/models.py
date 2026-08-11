@@ -78,10 +78,10 @@ class Invitation(models.Model):
 
 class Question(models.Model):
     class Status(models.TextChoices):
-        DRAFT = 'draft', 'Draft'
-        SUBMITTED = 'submitted', 'Submitted'
-        PUBLISHED = 'published', 'Published'
-        ARCHIVED = 'archived', 'Archived'
+        DRAFT = 'draft', 'Rascunho'
+        SUBMITTED = 'submitted', 'Enviada'
+        PUBLISHED = 'published', 'Publicada'
+        ARCHIVED = 'archived', 'Arquivada'
 
     invitation = models.ForeignKey(
         Invitation,
