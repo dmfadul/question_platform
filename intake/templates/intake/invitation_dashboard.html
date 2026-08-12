@@ -130,7 +130,7 @@
 
                                 <div class="question-preview">
                                     {% if question.body %}
-                                        {{ question.body|striptags|truncatechars:200 }}
+                                        {{ question.body|striptags|safe|truncatechars:200 }}
                                     {% else %}
                                         Questão sem texto.
                                     {% endif %}
