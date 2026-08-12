@@ -1,0 +1,137 @@
+```html
+{% extends "intake/base.html" %}
+
+{% block content %}
+
+<h1>Convites</h1>
+
+<p>
+    Total: {{ rows|length }}
+</p>
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>Coleção</th>
+            <th>Professor</th>
+            <th>Disciplina</th>
+            <th>Questões</th>
+            <th>Link</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>
+                    {{ row.invitation.collection.title }}
+                </td>
+
+                <td>
+                    {{ row.invitation.teacher.name }}
+                </td>
+
+                <td>
+                    {{ row.invitation.discipline.name }}
+                </td>
+
+                <td>
+                    {{ row.invitation.expected_questions }}
+                </td>
+
+                <td>
+                    <input
+                        type="text"
+                        value="{{ row.url }}"
+                        id="invite-{{ row.invitation.pk }}"
+                        readonly
+                        style="width: 350px;"
+                    >
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-primary"
+                        onclick="copyInvite(
+                            'invite-{{ row.invitation.pk }}',
+                            this
+                        )"
+                    >
+                        Copiar link
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-success"
+                        onclick="copyMessage(
+                            '{{ row.invitation.teacher.name|escapejs }}',
+                            '{{ row.invitation.discipline.name|escapejs }}',
+                            '{{ row.invitation.expected_questions }}',
+                            '{{ row.url|escapejs }}',
+                            this
+                        )"
+                    >
+                        Copiar mensagem
+                    </button>
+                </td>
+            </tr>
+
+        {% empty %}
+            <tr>
+                <td colspan="6">
+                    Nenhum convite encontrado.
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function copyInvite(inputId, button) {
+    const input = document.getElementById(inputId);
+
+    navigator.clipboard.writeText(input.value);
+
+    const originalText = button.innerText;
+
+    button.innerText = "Copiado!";
+
+    setTimeout(() => {
+        button.innerText = originalText;
+    }, 1000);
+}
+
+
+function copyMessage(
+    teacher,
+    discipline,
+    questions,
+    url,
+    button
+) {
+    const message =
+`Olá, ${teacher}.
+
+Você foi convidado(a) a enviar ${questions} questão(ões) para a disciplina de ${discipline}.
+Metade das questões serão usadas para prova de primeira chamada e a outra metade para prova de
+segunda chamada, na ordem em que forem enviadas.
+
+Acesse a página para envio das questões pelo link abaixo:
+${url}`;
+
+    navigator.clipboard.writeText(message);
+
+    const originalText = button.innerText;
+
+    button.innerText = "Copiado!";
+
+    setTimeout(() => {
+        button.innerText = originalText;
+    }, 1000);
+}
+</script>
+
+{% endblock %}
+```

@@ -1,14 +1,62 @@
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.core.exceptions import PermissionDenied
 from django.contrib.admin.views.decorators import staff_member_required
 
 from .forms import OptionFormSet, QuestionForm
-from .models import Collection, Question
+from .models import Collection, Question, Invitation
 from .services import get_valid_invitation
 from .exporters import get_submitted_questions
-from django.http import JsonResponse
+
+
+@staff_member_required
+def invitation_list(request):
+    collection_id = request.GET.get("collection")
+
+    invitations = (
+        Invitation.objects
+        .select_related(
+            "collection",
+            "teacher",
+            "discipline",
+        )
+    )
+
+    if collection_id:
+        invitations = invitations.filter(
+            collection_id=collection_id
+        )
+
+    invitations = invitations.order_by(
+        "collection__title",
+        "discipline__name",
+        "teacher__name",
+    )
+
+    rows = []
+
+    for invitation in invitations:
+        relative_url = reverse(
+            "intake:invitation-dashboard",
+            args=[invitation.token],
+        )
+
+        rows.append({
+            "invitation": invitation,
+            "url": request.build_absolute_uri(relative_url),
+        })
+
+    return render(
+        request,
+        "intake/invitation_list.html",
+        {
+            "rows": rows,
+            "collection_id": collection_id,
+        },
+    )
 
 
 @staff_member_required
