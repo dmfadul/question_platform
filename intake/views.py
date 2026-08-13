@@ -44,9 +44,14 @@ def invitation_list(request):
             args=[invitation.token],
         )
 
+        received_questions_count = invitation.questions.filter(
+            status=Question.Status.SUBMITTED,
+        ).count()
+
         rows.append({
             "invitation": invitation,
             "url": request.build_absolute_uri(relative_url),
+            "received_questions_count": received_questions_count,
         })
 
     return render(
