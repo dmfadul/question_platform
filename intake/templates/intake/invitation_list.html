@@ -67,6 +67,7 @@
                         onclick="copyMessage(
                             '{{ row.invitation.teacher.name|escapejs }}',
                             '{{ row.invitation.discipline.name|escapejs }}',
+                            '{{ row.invitation.collection.title|escapejs }}',
                             '{{ row.invitation.expected_questions }}',
                             '{{ row.url|escapejs }}',
                             this
@@ -106,18 +107,25 @@ function copyInvite(inputId, button) {
 function copyMessage(
     teacher,
     discipline,
+    collection,
     questions,
     url,
     button
 ) {
     const message =
-`Olá, ${teacher}.
+`Olá, Professor(a) ${teacher}.
 
-Você foi convidado(a) a enviar ${questions} questão(ões) para a disciplina de ${discipline}.
-Metade das questões serão usadas para prova de primeira chamada e a outra metade para prova de
-segunda chamada, na ordem em que forem enviadas.
+Disciplina: ${discipline}
+Turma: ${collection}
 
-Acesse a página para envio das questões pelo link abaixo:
+Para a realização da Prova Geral do Curso de Formação Técnico-Profissional, 
+solicitamos o envio de ${questions} questões para composição da avaliação.
+
+Prazo de envio: até 20/08
+
+ENVIO DAS QUESTÕES
+
+Acesse a página para cadastro e envio das questões pelo link abaixo:
 ${url}`;
 
     navigator.clipboard.writeText(message);
