@@ -38,6 +38,10 @@ def invitation_list(request):
 
     rows = []
 
+    expected_questions_total = sum(
+        invitation.expected_questions for invitation in invitations
+    )
+    received_questions_total = 0
     for invitation in invitations:
         relative_url = reverse(
             "intake:invitation-dashboard",
@@ -47,6 +51,8 @@ def invitation_list(request):
         received_questions_count = invitation.questions.filter(
             status=Question.Status.SUBMITTED,
         ).count()
+
+        received_questions_total += received_questions_count
 
         rows.append({
             "invitation": invitation,
@@ -59,6 +65,8 @@ def invitation_list(request):
         "intake/invitation_list.html",
         {
             "rows": rows,
+            "expected_questions_total": expected_questions_total,
+            "received_questions_total": received_questions_total,
             "collection_id": collection_id,
         },
     )
