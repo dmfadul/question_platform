@@ -1,5 +1,5 @@
 from pathlib import Path
-from .models import Question
+from intake.models import Question
 
 
 def get_submitted_questions(collection=None):
