@@ -12,6 +12,26 @@ from .services import get_valid_invitation
 from .exporters import get_submitted_questions
 
 
+def question_detail(request, token, question_id):
+    invitation = get_valid_invitation(token)
+
+    question = get_object_or_404(
+        Question.objects.prefetch_related("options"),
+        pk=question_id,
+        invitation=invitation,
+        status=Question.Status.SUBMITTED,
+    ).order_by("updated_at")
+
+    return render(
+        request,
+        "intake/question_detail.html",
+        {
+            "invitation": invitation,
+            "question": question,
+        },
+    )
+
+
 @staff_member_required
 def invitation_list(request):
     collection_id = request.GET.get("collection")
