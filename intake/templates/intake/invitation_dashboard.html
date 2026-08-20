@@ -159,20 +159,26 @@
                                 </div>
                             </div>
 
-
-                            {% if question.status == "draft" %}
-                                <a
-                                    class="
-                                        btn
-                                        btn-sm
-                                        btn-outline-primary
-                                        flex-shrink-0
-                                    "
-                                    href="{% url 'intake:question-edit' invitation.token question.pk %}"
-                                >
-                                    Editar
-                                </a>
-                            {% endif %}
+                            <div class="d-flex gap-2 flex-shrink-0">
+                            
+                                {% if question.status == "draft" %}
+                                    <a
+                                        class="btn btn-sm btn-outline-primary"
+                                        href="{% url 'intake:question-edit' invitation.token question.pk %}"
+                                    >
+                                        Editar
+                                    </a>
+                                
+                                {% elif question.status == "submitted" %}
+                                    <a
+                                        class="btn btn-sm btn-outline-primary"
+                                        href="{% url 'intake:question-detail' invitation.token question.pk %}"
+                                    >
+                                        Visualizar
+                                    </a>
+                                {% endif %}
+                                
+                            </div>
                         </div>
 
                     </div>

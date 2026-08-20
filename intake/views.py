@@ -20,7 +20,7 @@ def question_detail(request, token, question_id):
         pk=question_id,
         invitation=invitation,
         status=Question.Status.SUBMITTED,
-    ).order_by("updated_at")
+    )
 
     return render(
         request,
