@@ -7,7 +7,7 @@ from django.core.management.base import (
 )
 
 from intake.models import Collection
-from intake.prova_export import (
+from intake.exporters import (
     ProvaExportError,
     collection_to_prova,
 )
