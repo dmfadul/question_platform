@@ -1,1 +1,2 @@
 from .system_exporters import get_submitted_questions
+from .prova_exporter import collection_to_prova
