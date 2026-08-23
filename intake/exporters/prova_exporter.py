@@ -1,4 +1,6 @@
 from intake.models import Question
+from pathlib import Path
+import shutil
 
 
 CHOICE_LETTERS = ["A", "B", "C", "D", "E"]
@@ -8,17 +10,131 @@ class ProvaExportError(Exception):
     pass
 
 
-def question_to_prova(question, career):
+def content_with_image(text, image_src=None):
+    """
+    Keep the original TinyMCE HTML and append an image,
+    if one exists.
+    """
+    text = text or ""
+
+    if not image_src:
+        return text
+
+    image_html = (
+        '<p class="question-image">'
+        f'<img src="{image_src}" alt="">'
+        '</p>'
+    )
+
+    return f"{text}{image_html}"
+
+
+def get_image_extension(image):
+    """
+    Preserve the extension of the uploaded image.
+    """
+    suffix = Path(image.name).suffix.lower()
+
+    if not suffix:
+        raise ProvaExportError(
+            f"Image '{image.name}' has no file extension."
+        )
+
+    return suffix
+
+
+def copy_image(image, destination, filename):
+    """
+    Copy a Django ImageField file to the Prova export folder.
+
+    Uses Django's storage API, so this does not depend on
+    the file being stored locally.
+    """
+    destination.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    output_path = destination / filename
+
+    image.open("rb")
+
+    try:
+        with output_path.open("wb") as output_file:
+            shutil.copyfileobj(
+                image.file,
+                output_file,
+            )
+    finally:
+        image.close()
+
+    return output_path
+
+def export_question_image(question, images_dir):
+    if not question.image:
+        return None
+
+    extension = get_image_extension(
+        question.image,
+    )
+
+    filename = (
+        f"question_{question.pk}"
+        f"{extension}"
+    )
+
+    copy_image(
+        question.image,
+        images_dir,
+        filename,
+    )
+
+    return f"images/{filename}"
+
+
+def export_option_image(
+    question,
+    option,
+    images_dir,
+):
+    if not option.image:
+        return None
+
+    extension = get_image_extension(
+        option.image,
+    )
+
+    filename = (
+        f"question_{question.pk}"
+        f"_option_{option.position}"
+        f"{extension}"
+    )
+
+    copy_image(
+        option.image,
+        images_dir,
+        filename,
+    )
+
+    return f"images/{filename}"
+
+
+def question_to_prova(
+    question,
+    career,
+    images_dir,
+):
     options = list(
         question.options.order_by("position")
     )
 
-    if len(options) < 4:
+    if len(options) != 5:
         raise ProvaExportError(
-            f"Question {question.pk} has {len(options)} options. "
-            "Prova requires at least 4."
+            f"Question {question.pk} has "
+            f"{len(options)} options. "
+            "Prova requires exactly 5."
         )
-    
+
     correct_options = [
         option
         for option in options
@@ -27,47 +143,76 @@ def question_to_prova(question, career):
 
     if len(correct_options) != 1:
         raise ProvaExportError(
-            f"Question {question.pk} must have exactly "
-            f"one correct option."
+            f"Question {question.pk} must have "
+            "exactly one correct option."
         )
 
     correct_option = correct_options[0]
+    correct_index = options.index(
+        correct_option,
+    )
 
-    try:
-        correct_index = options.index(correct_option)
-    except ValueError:
-        raise ProvaExportError(
-            f"Could not determine the correct option "
-            f"for question {question.pk}."
+    question_image_src = export_question_image(
+        question,
+        images_dir,
+    )
+
+    option_image_srcs = [
+        export_option_image(
+            question,
+            option,
+            images_dir,
         )
-
-    correct_choice = CHOICE_LETTERS[correct_index]
+        for option in options
+    ]
 
     return {
-        "discipline": question.invitation.discipline,
+        "discipline": (
+            question.invitation.discipline
+        ),
 
-        # KEEP THE ORIGINAL TINYMCE HTML
-        "body": question.body,
+        "body": content_with_image(
+            question.body,
+            question_image_src,
+        ),
 
-        "choice_a": options[0].text,
-        "choice_b": options[1].text,
-        "choice_c": options[2].text,
-        "choice_d": options[3].text,
-        "choice_e": options[4].text,
+        "choice_a": content_with_image(
+            options[0].text,
+            option_image_srcs[0],
+        ),
 
-        "correct_choice": correct_choice,
+        "choice_b": content_with_image(
+            options[1].text,
+            option_image_srcs[1],
+        ),
 
-        # Now contains ONLY this question's cohort
-        "cohorts": [
-            career,
-        ],
+        "choice_c": content_with_image(
+            options[2].text,
+            option_image_srcs[2],
+        ),
+
+        "choice_d": content_with_image(
+            options[3].text,
+            option_image_srcs[3],
+        ),
+
+        "choice_e": content_with_image(
+            options[4].text,
+            option_image_srcs[4],
+        ),
+
+        "correct_choice": (
+            CHOICE_LETTERS[correct_index]
+        ),
+
+        "cohorts": [career],
 
         "rel_pos": 0,
         "abs_pos": 0,
     }
 
 
-def collection_to_prova(collection):
+def collection_to_prova(collection, images_dir):
     questions = (
         Question.objects
         .filter(
@@ -90,6 +235,7 @@ def collection_to_prova(collection):
             question_to_prova(
                 question,
                 collection.career,
+                images_dir,
             )
             for question in questions
         ]
