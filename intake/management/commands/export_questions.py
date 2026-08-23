@@ -1,63 +1,64 @@
-from datetime import datetime
+import json
 from pathlib import Path
 
-from django.conf import settings
 from django.core.management.base import (
     BaseCommand,
     CommandError,
 )
 
-from intake.exporters.text_export import (
-    export_collections,
-)
 from intake.models import Collection
+from intake.prova_export import (
+    ProvaExportError,
+    collection_to_prova,
+)
 
 
 class Command(BaseCommand):
-    help = (
-        "Export submitted questions "
-        "and associated images."
-    )
+    help = "Export submitted questions to Prova questions.json."
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--collections",
-            nargs="+",
+            "collection_id",
             type=int,
-            required=True,
         )
 
     def handle(self, *args, **options):
+        collection_id = options["collection_id"]
 
-        ids = options["collections"]
-
-        collections = Collection.objects.filter(
-            pk__in=ids
-        ).order_by("pk")
-
-        if collections.count() != len(ids):
+        try:
+            collection = Collection.objects.get(
+                pk=collection_id
+            )
+        except Collection.DoesNotExist:
             raise CommandError(
-                "One or more collection IDs do not exist."
+                f"Collection {collection_id} does not exist."
             )
 
-        timestamp = datetime.now().strftime(
-            "%Y-%m-%d_%H%M%S"
+        output_path = Path(
+            f"{collection.career}.json"
         )
 
-        export_dir = (
-            Path(settings.BASE_DIR)
-            / "exports"
-            / timestamp
-        )
+        try:
+            data = collection_to_prova(
+                collection,
+            )
 
-        export_collections(
-            collections,
-            export_dir,
-        )
+        except ProvaExportError as exc:
+            raise CommandError(str(exc))
+
+        with output_path.open(
+            "w",
+            encoding="utf-8",
+        ) as file:
+            json.dump(
+                data,
+                file,
+                ensure_ascii=False,
+                indent=2,
+            )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Export created at:\n"
-                f"{export_dir}"
+                f"Exported questions to {output_path}"
             )
         )

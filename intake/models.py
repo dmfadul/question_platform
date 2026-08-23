@@ -19,6 +19,12 @@ class Collection(models.Model):
     is_open = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def career(self):
+        # NEXT VERSION: This should be a ForeignKey to a Career model,
+        # but for now we just return the first 3 letters of the title.
+        return self.title[:3].upper()
+
     def __str__(self):
         return self.title
 

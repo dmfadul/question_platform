@@ -8,7 +8,7 @@ class ProvaExportError(Exception):
     pass
 
 
-def question_to_prova(question, cohort):
+def question_to_prova(question, career):
     options = list(
         question.options.order_by("position")
     )
@@ -59,7 +59,7 @@ def question_to_prova(question, cohort):
 
         # Now contains ONLY this question's cohort
         "cohorts": [
-            cohort,
+            career,
         ],
 
         "rel_pos": 0,
@@ -67,7 +67,7 @@ def question_to_prova(question, cohort):
     }
 
 
-def collection_to_prova(collection, cohort):
+def collection_to_prova(collection):
     questions = (
         Question.objects
         .filter(
@@ -86,10 +86,10 @@ def collection_to_prova(collection, cohort):
     )
 
     return {
-        cohort: [
+        collection.career: [
             question_to_prova(
                 question,
-                cohort,
+                collection.career,
             )
             for question in questions
         ]
