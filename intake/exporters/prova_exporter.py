@@ -168,7 +168,7 @@ def question_to_prova(
 
     return {
         "discipline": (
-            question.invitation.discipline
+            question.invitation.discipline.name
         ),
 
         "body": content_with_image(
@@ -212,6 +212,7 @@ def question_to_prova(
     }
 
 
+# TODO: CHECK IF ORDERING IS CORRECT
 def collection_to_prova(collection, images_dir):
     questions = (
         Question.objects
