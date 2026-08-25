@@ -104,9 +104,9 @@ class BaseOptionFormSet(BaseInlineFormSet):
             if form.cleaned_data.get("is_correct"):
                 correct_count += 1
 
-        if len(filled_options) != 5:
+        if len(filled_options) < 4:
             raise ValidationError(
-                "Adicione exatamente cinco alternativas."
+                "Adicione pelo menos quatro alternativas."
             )
 
         if correct_count != 1:
