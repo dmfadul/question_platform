@@ -1,9 +1,9 @@
-from dataclasses import dataclass, field
 from .services import shuffle_disciplines
 from intake.models import (
     Collection,
     Discipline,
 )
+from .mini_models import Test
 
 
 # In next version, this career, not cohort will be in the models
@@ -14,22 +14,22 @@ CAREER_COHORTS_MAP = {
     "DEL": "DEL47",
 }
 
-@dataclass
-class Test:
-    name: str
-    career: str
-    disciplines: dict[str, Discipline] = field(default_factory=dict)
 
 
 def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
     test = Test(name=name, career=career)
 
     collection = Collection.objects.filter(title=CAREER_COHORTS_MAP[career]).first()
-    print("collection", collection)
+    invitations = list(
+        collection.invitations
+        .select_related("discipline")
+        .order_by("discipline__name")
+    )
 
+    invitations = shuffle_disciplines(invitations, seed=seed)
+    for invitation in invitations:
+        print(invitation.discipline.name)
 
-    career_disciplines = []
-    disciplines = shuffle_disciplines(career_disciplines, seed=seed)
 
 
 

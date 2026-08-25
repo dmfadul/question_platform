@@ -1,12 +1,13 @@
 import csv
 from pathlib import Path
+from django.utils.text import slugify
 
 BASE_DIR = Path(__file__).resolve().parent
 
 
 def generate_disciplines(career: str):
     csv_path = BASE_DIR / "resources" / "disciplines" / f"{career.lower()}.csv"
-    disciplines = []
+    disciplines = {}
 
     with open(
         csv_path,
@@ -17,16 +18,6 @@ def generate_disciplines(career: str):
         next(reader)  # header
 
         for name, num_questions in reader:
-            print(f"Discipline: {name}, Number of Questions: {num_questions}")
-    #     for name, dele, apj, pap in reader:
-    #         disciplines.append(
-    #             Discipline(
-    #                 name=name.strip(),
-    #                 del_num_questions=int(dele),
-    #                 apj_num_questions=int(apj),
-    #                 pap_num_questions=int(pap),
-    #                 questions=[],
-    #             )
-    #         )
+            disciplines[slugify(name.strip())] = int(num_questions)
 
-    # return disciplines
+    return disciplines

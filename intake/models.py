@@ -80,6 +80,10 @@ class Invitation(models.Model):
             f"{self.discipline.name} — "
             f"{self.collection.title}"
         )
+    
+    def number_of_questions(self):
+        # in the next version, this should be replaced with a column
+        return self.expected_questions // 2
 
 
 class Question(models.Model):
