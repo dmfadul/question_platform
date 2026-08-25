@@ -1,3 +1,5 @@
-from gen_disciplines import generate_disciplines
+from .gen_test import generate_test
 
-generate_disciplines("APJ")
+
+def main():
+    generate_test("A", "APJ")
