@@ -3,18 +3,14 @@
 
 from dataclasses import dataclass, field
 from typing import List
-from intake.models import (
-    Collection,
-    Discipline,
-    Question
-)
+from intake.models import Question
 
 
 @dataclass
 class Test:
     name: str
     career: str
-    disciplines: dict[str, Discipline] = field(default_factory=dict)
+    disciplines: dict[str, Discipline_dataclass] = field(default_factory=dict)
 
 
 @dataclass
@@ -24,7 +20,7 @@ class DisciplineQuestion:
     
 
 @dataclass
-class Discipline:
+class Discipline_dataclass:
     name: str
     num_questions: int
     questions: list[DisciplineQuestion] = field(default_factory=list)

@@ -3,7 +3,10 @@ from intake.models import (
     Collection,
     Discipline,
 )
-from .mini_models import Test
+from .dataclass_models import (
+    Test,
+    Discipline_dataclass,
+)
 
 
 # In next version, this career, not cohort will be in the models
@@ -13,8 +16,6 @@ CAREER_COHORTS_MAP = {
     "PAP": "PAP23",
     "DEL": "DEL47",
 }
-
-
 
 def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
     test = Test(name=name, career=career)
