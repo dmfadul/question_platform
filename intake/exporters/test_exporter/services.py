@@ -1,9 +1,7 @@
-def _shuffle_disciplines(disciplines: list, seed: int) -> list:
+def shuffle_disciplines(disciplines: list, seed: int) -> list:
     import random
-
-    seed = abs(seed)
     
-    if seed in (0, 1):
+    if seed == 0:
         return disciplines
 
     rng = random.Random(seed)
