@@ -29,7 +29,16 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
 
     invitations = shuffle_disciplines(invitations, seed=seed)
     for invitation in invitations:
-        print(invitation.discipline.name)
+        questions_in_invitation = invitation.questions.all()
+        if invert_question_order:
+            questions_in_invitation = reversed(questions_in_invitation)
+
+        for question in questions_in_invitation:
+            # maybe a good place to convert the tinyMCE content to plain text
+            Discipline_dataclass(
+                
+            )
+            print(question.body[:50])
 
 
 

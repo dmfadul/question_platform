@@ -10,14 +10,8 @@ from intake.models import Question
 class Test:
     name: str
     career: str
-    disciplines: dict[str, Discipline_dataclass] = field(default_factory=dict)
-
-
-@dataclass
-class DisciplineQuestion:
-    question: Question
-    position: int
-    
+    disciplines: dict = field(default_factory=dict)
+  
 
 @dataclass
 class Discipline_dataclass:
@@ -38,3 +32,21 @@ class Discipline_dataclass:
         )
 
         return True
+
+@dataclass
+class DisciplineQuestion:
+    question: Question
+    position: int
+
+
+@dataclass
+class Question_dataclass:
+    body: str
+    choice_a: str
+    choice_b: str
+    choice_c: str
+    choice_d: str
+    choice_e: str
+    correct_choice: str
+    rel_pos: int = 0
+    abs_pos: int = 0
