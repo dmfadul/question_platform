@@ -1,3 +1,3 @@
 from gen_disciplines import generate_disciplines
 
-generate_disciplines()
+generate_disciplines("APJ")

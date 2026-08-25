@@ -1,17 +1,23 @@
 import csv
+from pathlib import Path
 
-def generate_disciplines():
-    print("Generating disciplines...")
-    # disciplines = []
+BASE_DIR = Path(__file__).resolve().parent
 
-    # with open(
-    #     "resources/disciplinas.csv",
-    #     newline="",
-    #     encoding="utf-8",
-    # ) as f:
-    #     reader = csv.reader(f)
-    #     next(reader)  # header
 
+def generate_disciplines(career: str):
+    csv_path = BASE_DIR / "resources" / "disciplines" / f"{career.lower()}.csv"
+    disciplines = []
+
+    with open(
+        csv_path,
+        newline="",
+        encoding="utf-8",
+    ) as f:
+        reader = csv.reader(f)
+        next(reader)  # header
+
+        for name, num_questions in reader:
+            print(f"Discipline: {name}, Number of Questions: {num_questions}")
     #     for name, dele, apj, pap in reader:
     #         disciplines.append(
     #             Discipline(
