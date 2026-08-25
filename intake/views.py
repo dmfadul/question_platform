@@ -165,7 +165,7 @@ def invitation_dashboard(request, token):
     invitation = get_valid_invitation(token)
 
     questions = invitation.questions.order_by(
-        "updated_at",
+        "created_at",
     )
 
     submitted_count = questions.filter(
