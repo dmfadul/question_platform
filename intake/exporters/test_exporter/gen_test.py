@@ -4,6 +4,7 @@ from docxtpl import DocxTemplate
 from docx.oxml import OxmlElement
 
 from .services import shuffle_disciplines
+from dataclasses import asdict
 from intake.models import (
     Collection,
     Discipline,
@@ -56,19 +57,33 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
         for question in questions_in_invitation:
             # maybe a good place to convert the tinyMCE content to plain text
             options = question.options.all()
-            question_dc = Question_dataclass(
-                body=question.body,
-                choice_a=options[0].text,
-                choice_b=options[1].text,
-                choice_c=options[2].text,
-                choice_d=options[3].text,
-                choice_e=options[4].text,
-                correct_choice=options.get(is_correct=True).letter,
-            )
+            # question_dc = Question_dataclass(
+            #     body=question.body,
+            #     choice_a=options[0].text,
+            #     choice_b=options[1].text,
+            #     choice_c=options[2].text,
+            #     choice_d=options[3].text,
+            #     choice_e=options[4].text,
+            #     correct_choice=options.get(is_correct=True).letter,
+            # )
+            question_dc = Question_dataclass.gen_empty()
             discipline_dc.add_question(question_dc)
         
         test.add_discipline(discipline_dc)
         test.set_questions_abs_pos()
+    
+    # test_dict = asdict(test)
+    # test_disciplines = list(test_dict["disciplines"])
+
+    for discipline in test.disciplines[:10]:
+        print(discipline.name)
+        for q in discipline.questions:
+            print(f"{q.abs_pos}. {q.body[:30]}...")
+            print(f"   A. {q.choice_a[:10]}...")
+            print(f"   B. {q.choice_b[:10]}...")
+            print(f"   C. {q.choice_c[:10]}...")
+            print(f"   D. {q.choice_d[:10]}...")
+            print(f"   E. {q.choice_e[:10]}...")
 
     context = {
         "name": test.name,

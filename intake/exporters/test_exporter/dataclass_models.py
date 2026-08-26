@@ -25,7 +25,7 @@ class Test:
     def set_questions_abs_pos(self):
         for discipline in self.disciplines:
             for question in discipline.questions:
-                question.absolute_position = discipline.starting_position + question.relative_position - 1
+                question.abs_pos = discipline.starting_position + question.relative_position - 1
 
 @dataclass
 class Discipline_dataclass:
@@ -55,4 +55,16 @@ class Question_dataclass:
     choice_e: str
     correct_choice: str
     relative_position: int = 0
-    absolute_position: int = 0
+    abs_pos: int = 0
+
+    @classmethod
+    def gen_empty(cls):
+        return cls(
+            body="no question body available",
+            choice_a="[No options available]",
+            choice_b="[No options available]",
+            choice_c="[No options available]",
+            choice_d="[No options available]",
+            choice_e="[No options available]",
+            correct_choice="[No correct option available]",
+        )
