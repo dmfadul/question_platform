@@ -32,7 +32,7 @@ CAREER_ABR_MAP = {
 
 TEMPLATE_PATH = "resources/test_template.docx"
 def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
-    output_path = f"output/PROVA_{career}-{name}.docx"
+    output_path = f"tests_output/PROVA_{career}-{name}.docx"
     test = Test(name=name, career=career)
 
     collection = Collection.objects.filter(title=CAREER_COHORTS_MAP[career]).first()
@@ -70,12 +70,15 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
         test.add_discipline(discipline_dc)
         test.set_questions_abs_pos()
 
-        doc = DocxTemplate(TEMPLATE_PATH)
-
-        return True
-
-
-
-
-
-    return test
+    context = {
+        "name": test.name,
+        "career": test.career,
+        "test": test.disciplines,
+        "career_name": CAREER_ABR_MAP[career],
+    }
+    
+    doc = DocxTemplate(TEMPLATE_PATH)
+    doc.render(context)
+    doc.save(output_path)
+    
+    return True

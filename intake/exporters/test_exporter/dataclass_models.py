@@ -40,7 +40,7 @@ class Discipline_dataclass:
 
         question.relative_position = len(self.questions) + 1
 
-        self.questions.append(question=question)
+        self.questions.append(question)
 
         return True
 
