@@ -146,3 +146,7 @@ class Option(models.Model):
 
     def __str__(self):
         return f"Option {self.position} for Question {self.question_id}"
+    
+    @property
+    def letter(self):
+        return chr(ord("A") + self.position - 1)
