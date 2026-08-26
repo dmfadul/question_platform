@@ -10,33 +10,39 @@ from intake.models import Question
 class Test:
     name: str
     career: str
-    disciplines: dict = field(default_factory=dict)
-  
+    disciplines: list = field(default_factory=list)
+
+    def add_discipline(self, discipline):
+        if discipline in self.disciplines:
+            return False
+        
+        current_position = sum(d.num_questions for d in self.disciplines)
+        discipline.starting_position = current_position + 1
+
+        self.disciplines.append(discipline)
+        return True
+    
+    def set_questions_abs_pos(self):
+        for discipline in self.disciplines:
+            for question in discipline.questions:
+                question.absolute_position = discipline.starting_position + question.relative_position - 1
 
 @dataclass
 class Discipline_dataclass:
     name: str
     num_questions: int
-    questions: list[DisciplineQuestion] = field(default_factory=list)
+    questions: list[Question_dataclass] = field(default_factory=list)
     starting_position: int = 0 # the number of the first question in this discipline, in the test
 
     def add_question(self, question):       
         if len(self.questions) >= self.num_questions:
             return False
-        
-        self.questions.append(
-            DisciplineQuestion(
-                question=question,
-                position=len(self.questions) + 1,
-            )
-        )
+
+        question.relative_position = len(self.questions) + 1
+
+        self.questions.append(question=question)
 
         return True
-
-@dataclass
-class DisciplineQuestion:
-    question: Question
-    position: int
 
 
 @dataclass
@@ -48,5 +54,5 @@ class Question_dataclass:
     choice_d: str
     choice_e: str
     correct_choice: str
-    rel_pos: int = 0
-    abs_pos: int = 0
+    relative_position: int = 0
+    absolute_position: int = 0

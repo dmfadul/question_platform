@@ -1,3 +1,8 @@
+from docx import Document
+from docx.oxml.ns import qn
+from docxtpl import DocxTemplate
+from docx.oxml import OxmlElement
+
 from .services import shuffle_disciplines
 from intake.models import (
     Collection,
@@ -6,7 +11,6 @@ from intake.models import (
 from .dataclass_models import (
     Test,
     Discipline_dataclass,
-    DisciplineQuestion,
     Question_dataclass,
 )
 
@@ -19,7 +23,16 @@ CAREER_COHORTS_MAP = {
     "DEL": "DEL47",
 }
 
+CAREER_ABR_MAP = {
+    "APJ": "AGENTE DE POLICIA JUDICIÁRIA",
+    "PAP": "PAPILOSCOPISTA POLICIAL",
+    "DEL": "DELEGADO DE POLÍCIA",
+}
+
+
+TEMPLATE_PATH = "resources/test_template.docx"
 def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
+    output_path = f"output/PROVA_{career}-{name}.docx"
     test = Test(name=name, career=career)
 
     collection = Collection.objects.filter(title=CAREER_COHORTS_MAP[career]).first()
@@ -52,7 +65,15 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
                 choice_e=options[4].text,
                 correct_choice=options.get(is_correct=True).letter,
             )
-            print(question_dc)
+            discipline_dc.add_question(question_dc)
+        
+        test.add_discipline(discipline_dc)
+        test.set_questions_abs_pos()
+
+        doc = DocxTemplate(TEMPLATE_PATH)
+
+        return True
+
 
 
 
