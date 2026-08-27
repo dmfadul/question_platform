@@ -3,13 +3,11 @@ from docx.oxml.ns import qn
 from docxtpl import DocxTemplate
 from docx.oxml import OxmlElement
 
+from .image_manager import prepare_image
 from .services import shuffle_disciplines
 from .formatting import tinymce_to_plain_text
 from dataclasses import asdict
-from intake.models import (
-    Collection,
-    Discipline,
-)
+from intake.models import Collection
 from .dataclass_models import (
     Test,
     Discipline_dataclass,
