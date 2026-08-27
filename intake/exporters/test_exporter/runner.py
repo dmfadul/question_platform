@@ -1,18 +1,18 @@
 from .gen_test import generate_test
 
-TEST_TYPES = ["A", "B"]
+TEST_TYPES = [("A", 42), ("B", 23)]
 CAREERS = ["APJ", "PAP", "DEL"]
 INCLUDE_SECOND_CHANCE = True
 
 def main():
-    for test_type in TEST_TYPES:
-        for career in CAREERS:
+    for career in CAREERS:
+        for test_type, seed in TEST_TYPES:
             print(f"Generating test {test_type} for career {career}...")
-            # generate_test(test_type, career)
+            # generate_test(test_type, career, seed=seed)
 
         if INCLUDE_SECOND_CHANCE:
-            for career in CAREERS:
+            for test_type, seed in TEST_TYPES:
                 print(f"Generating second chance test SEGUNDA CHAMADA - {test_type} for career {career}...")
-                # generate_test(test_type, career, invert_question_order=True)
+                # generate_test(test_type, career, seed=seed, invert_question_order=True)
 
-    generate_test("A", "APJ")
+    generate_test("C", "APJ", seed=42, invert_question_order=False)
