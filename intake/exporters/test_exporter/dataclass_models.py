@@ -57,6 +57,13 @@ class Question_dataclass:
     relative_position: int = 0
     abs_pos: int = 0
 
+    question_image: str | None = None
+    choice_a_image: str | None = None
+    choice_b_image: str | None = None
+    choice_c_image: str | None = None
+    choice_d_image: str | None = None
+    choice_e_image: str | None = None
+
     @classmethod
     def gen_empty(cls):
         return cls(
