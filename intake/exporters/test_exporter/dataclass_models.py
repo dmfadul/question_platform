@@ -27,6 +27,10 @@ class Test:
             for question in discipline.questions:
                 question.abs_pos = discipline.starting_position + question.relative_position - 1
 
+    def fill_empty_questions(self):
+        for discipline in self.disciplines:
+            discipline.fill_empty_questions()
+
 @dataclass
 class Discipline_dataclass:
     name: str
@@ -39,11 +43,14 @@ class Discipline_dataclass:
             return False
 
         question.relative_position = len(self.questions) + 1
-
         self.questions.append(question)
 
         return True
 
+    def fill_empty_questions(self):
+        while len(self.questions) < self.num_questions:
+            empty_question = Question_dataclass.gen_empty()
+            self.add_question(empty_question)
 
 @dataclass
 class Question_dataclass:
