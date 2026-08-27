@@ -71,6 +71,7 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
             discipline_dc.add_question(question_dc)
         
         test.add_discipline(discipline_dc)
+        
         test.set_questions_abs_pos()
     
     # test_dict = asdict(test)

@@ -60,11 +60,11 @@ class Question_dataclass:
     @classmethod
     def gen_empty(cls):
         return cls(
-            body="no question body available",
-            choice_a="[No options available]",
-            choice_b="[No options available]",
-            choice_c="[No options available]",
-            choice_d="[No options available]",
-            choice_e="[No options available]",
-            correct_choice="[No correct option available]",
+            body="[A questão não possui enunciado]",
+            choice_a="[Opção indisponível]",
+            choice_b="[Opção indisponível]",
+            choice_c="[Opção indisponível]",
+            choice_d="[Opção indisponível]",
+            choice_e="[Opção indisponível]",
+            correct_choice="[Resposta indisponível]",
         )
