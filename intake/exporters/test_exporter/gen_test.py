@@ -51,21 +51,26 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
         for question in questions_in_invitation:
             # maybe a good place to convert the tinyMCE content to plain text
             options = question.options.all()
+            choice_e = tinymce_to_plain_text(options[4].text)
+            if not choice_e:
+                print(f"question {question.pk}: choice e is empty, setting to default value")
+                choice_e = "Nenhuma das alternativas acima"
+
             question_dc = Question_dataclass(
                 body=tinymce_to_plain_text(question.body),
                 choice_a=tinymce_to_plain_text(options[0].text),
                 choice_b=tinymce_to_plain_text(options[1].text),
                 choice_c=tinymce_to_plain_text(options[2].text),
                 choice_d=tinymce_to_plain_text(options[3].text),
-                choice_e=tinymce_to_plain_text(options[4].text),
+                choice_e=choice_e,
                 correct_choice=options.get(is_correct=True).letter,
 
-                question_image=prepare_image(question.image, f"question_{question.pk}"),
-                choice_a_image=prepare_image(options[0].image, f"question_{question.pk}_option_1"),
-                choice_b_image=prepare_image(options[1].image, f"question_{question.pk}_option_2"),
-                choice_c_image=prepare_image(options[2].image, f"question_{question.pk}_option_3"),
-                choice_d_image=prepare_image(options[3].image, f"question_{question.pk}_option_4"),
-                choice_e_image=prepare_image(options[4].image, f"question_{question.pk}_option_5"),
+                # question_image=prepare_image(question.image, f"question_{question.pk}"),
+                # choice_a_image=prepare_image(options[0].image, f"question_{question.pk}_option_1"),
+                # choice_b_image=prepare_image(options[1].image, f"question_{question.pk}_option_2"),
+                # choice_c_image=prepare_image(options[2].image, f"question_{question.pk}_option_3"),
+                # choice_d_image=prepare_image(options[3].image, f"question_{question.pk}_option_4"),
+                # choice_e_image=prepare_image(options[4].image, f"question_{question.pk}_option_5"),
             )
             
             discipline_dc.add_question(question_dc)
