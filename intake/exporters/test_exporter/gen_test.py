@@ -53,7 +53,7 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
             options = question.options.all()
             choice_e = tinymce_to_plain_text(options[4].text)
             if not choice_e:
-                print(f"question {question.pk}: choice e is empty, setting to default value")
+                # print(f"question {question.pk}: choice e is empty, setting to default value")
                 choice_e = "Nenhuma das alternativas acima"
 
             question_dc = Question_dataclass(
@@ -65,12 +65,12 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
                 choice_e=choice_e,
                 correct_choice=options.get(is_correct=True).letter,
 
-                # question_image=prepare_image(question.image, f"question_{question.pk}"),
-                # choice_a_image=prepare_image(options[0].image, f"question_{question.pk}_option_1"),
-                # choice_b_image=prepare_image(options[1].image, f"question_{question.pk}_option_2"),
-                # choice_c_image=prepare_image(options[2].image, f"question_{question.pk}_option_3"),
-                # choice_d_image=prepare_image(options[3].image, f"question_{question.pk}_option_4"),
-                # choice_e_image=prepare_image(options[4].image, f"question_{question.pk}_option_5"),
+                question_image=prepare_image(question.image, f"question_{question.pk}"),
+                choice_a_image=prepare_image(options[0].image, f"question_{question.pk}_option_1"),
+                choice_b_image=prepare_image(options[1].image, f"question_{question.pk}_option_2"),
+                choice_c_image=prepare_image(options[2].image, f"question_{question.pk}_option_3"),
+                choice_d_image=prepare_image(options[3].image, f"question_{question.pk}_option_4"),
+                choice_e_image=prepare_image(options[4].image, f"question_{question.pk}_option_5"),
             )
             
             discipline_dc.add_question(question_dc)
@@ -78,19 +78,6 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
         test.add_discipline(discipline_dc)
         test.fill_empty_questions()
         test.set_questions_abs_pos()
-    
-    # test_dict = asdict(test)
-    # test_disciplines = list(test_dict["disciplines"])
-
-    # for discipline in test.disciplines[:10]:
-    #     print(discipline.name)
-    #     for q in discipline.questions:
-    #         print(f"{q.abs_pos}. {q.body[:30]}...")
-    #         print(f"   A. {q.choice_a[:10]}...")
-    #         print(f"   B. {q.choice_b[:10]}...")
-    #         print(f"   C. {q.choice_c[:10]}...")
-    #         print(f"   D. {q.choice_d[:10]}...")
-    #         print(f"   E. {q.choice_e[:10]}...")
 
     context = {
         "name": test.name,
