@@ -8,6 +8,8 @@ from .dataclass_models import (
     Discipline_dataclass,
     Question_dataclass,
 )
+from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Mm
 
 
 # In next version, this career, not cohort will be in the models
@@ -26,52 +28,122 @@ CAREER_ABR_MAP = {
 
 
 TEMPLATE_PATH = "resources/test_template.docx"
-def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
-    output_path = f"tests_output/PROVA_{career}-{name}.docx"
-    test = Test(name=name, career=career)
+IMG_TEMPLATE_PATH = "resources/image_template.docx"
 
-    collection = Collection.objects.filter(title=CAREER_COHORTS_MAP[career]).first()
+def generate_test(
+    name,
+    career,
+    seed=42,
+    invert_question_order=False,
+) -> Test:
+    output_path = f"tests_output/PROVA_{career}-{name}.docx"
+    img_output_path = (
+        f"tests_output/PROVA_{career}-{name}_images.docx"
+    )
+
+    test = Test(
+        name=name,
+        career=career,
+    )
+
+    collection = Collection.objects.filter(
+        title=CAREER_COHORTS_MAP[career]
+    ).first()
+
     invitations = list(
         collection.invitations
         .select_related("discipline")
         .order_by("discipline__name")
     )
 
-    invitations = shuffle_disciplines(invitations, seed=seed)
+    invitations = shuffle_disciplines(
+        invitations,
+        seed=seed,
+    )
+
     for invitation in invitations:
         discipline_dc = Discipline_dataclass(
             name=invitation.discipline.name,
             num_questions=invitation.number_of_questions(),
         )
 
-        questions_in_invitation = invitation.questions.all()
+        questions_in_invitation = list(
+            invitation.questions.all()
+        )
+
         if invert_question_order:
-            questions_in_invitation = reversed(questions_in_invitation)
+            questions_in_invitation.reverse()
 
         for question in questions_in_invitation:
-            # maybe a good place to convert the tinyMCE content to plain text
-            options = question.options.all()
-            choice_e = tinymce_to_plain_text(options[4].text)
+            options = list(question.options.all())
+
+            question_image = prepare_image(
+                question.image,
+                f"question_{question.pk}",
+            )
+
+            choice_a_image = prepare_image(
+                options[0].image,
+                f"question_{question.pk}_option_1",
+            )
+
+            choice_b_image = prepare_image(
+                options[1].image,
+                f"question_{question.pk}_option_2",
+            )
+
+            choice_c_image = prepare_image(
+                options[2].image,
+                f"question_{question.pk}_option_3",
+            )
+
+            choice_d_image = prepare_image(
+                options[3].image,
+                f"question_{question.pk}_option_4",
+            )
+
+            choice_e_image = prepare_image(
+                options[4].image,
+                f"question_{question.pk}_option_5",
+            )
+
+            choice_e = tinymce_to_plain_text(
+                options[4].text,
+                choice_e_image,
+            )
+
             if not choice_e:
-                # print(f"question {question.pk}: choice e is empty, setting to default value")
                 choice_e = "Nenhuma das alternativas acima"
 
-            question_image=prepare_image(question.image, f"question_{question.pk}")
-            choice_a_image=prepare_image(options[0].image, f"question_{question.pk}_option_1")
-            choice_b_image=prepare_image(options[1].image, f"question_{question.pk}_option_2")
-            choice_c_image=prepare_image(options[2].image, f"question_{question.pk}_option_3")
-            choice_d_image=prepare_image(options[3].image, f"question_{question.pk}_option_4")
-            choice_e_image=prepare_image(options[4].image, f"question_{question.pk}_option_5")
+            correct_option = next(
+                option
+                for option in options
+                if option.is_correct
+            )
 
             question_dc = Question_dataclass(
-                body=tinymce_to_plain_text(question.body, question_image),
-                choice_a=tinymce_to_plain_text(options[0].text, choice_a_image),
-                choice_b=tinymce_to_plain_text(options[1].text, choice_b_image),
-                choice_c=tinymce_to_plain_text(options[2].text, choice_c_image),
-                choice_d=tinymce_to_plain_text(options[3].text, choice_d_image),
+                body=tinymce_to_plain_text(
+                    question.body,
+                    question_image,
+                ),
+                choice_a=tinymce_to_plain_text(
+                    options[0].text,
+                    choice_a_image,
+                ),
+                choice_b=tinymce_to_plain_text(
+                    options[1].text,
+                    choice_b_image,
+                ),
+                choice_c=tinymce_to_plain_text(
+                    options[2].text,
+                    choice_c_image,
+                ),
+                choice_d=tinymce_to_plain_text(
+                    options[3].text,
+                    choice_d_image,
+                ),
                 choice_e=choice_e,
-                correct_choice=options.get(is_correct=True).letter,
-
+                correct_choice=correct_option.letter,
                 question_image=question_image,
                 choice_a_image=choice_a_image,
                 choice_b_image=choice_b_image,
@@ -79,12 +151,15 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
                 choice_d_image=choice_d_image,
                 choice_e_image=choice_e_image,
             )
-            
+
             discipline_dc.add_question(question_dc)
-        
+
         test.add_discipline(discipline_dc)
-        test.fill_empty_questions()
-        test.set_questions_abs_pos()
+
+    # Finalize the test only after all disciplines have been added.
+    test.fill_empty_questions()
+    test.set_questions_abs_pos()
+    test.set_has_images()
 
     context = {
         "name": test.name,
@@ -92,9 +167,62 @@ def generate_test(name, career, seed=42, invert_question_order=False) -> Test:
         "test": test.disciplines,
         "career_name": CAREER_ABR_MAP[career],
     }
-    
+
+    # Generate the main test document.
     doc = DocxTemplate(TEMPLATE_PATH)
     doc.render(context)
     doc.save(output_path)
-    
-    return True
+
+    # Generate the separate image document.
+    if test.has_images:
+        image_doc = DocxTemplate(IMG_TEMPLATE_PATH)
+        image_disciplines = []
+
+        for discipline in test.disciplines:
+            if not discipline.has_images:
+                continue
+
+            image_items = []
+
+            for question in discipline.questions:
+                if not question.has_images:
+                    continue
+
+                images = [
+                    (None, question.question_image),
+                    ("A", question.choice_a_image),
+                    ("B", question.choice_b_image),
+                    ("C", question.choice_c_image),
+                    ("D", question.choice_d_image),
+                    ("E", question.choice_e_image),
+                ]
+
+                for option, image_path in images:
+                    if not image_path:
+                        continue
+
+                    image_items.append({
+                        "question_number": question.abs_pos,
+                        "option": option,
+                        "image": InlineImage(
+                            image_doc,
+                            image_path,
+                            width=Mm(150),
+                        ),
+                    })
+
+            if image_items:
+                image_disciplines.append({
+                    "name": discipline.name,
+                    "images": image_items,
+                })
+
+        image_context = {
+            **context,
+            "image_disciplines": image_disciplines,
+        }
+
+        image_doc.render(image_context)
+        image_doc.save(img_output_path)
+
+    return test
