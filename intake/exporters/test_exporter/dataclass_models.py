@@ -3,7 +3,6 @@
 
 from dataclasses import dataclass, field
 from typing import List
-from intake.models import Question
 
 
 @dataclass
@@ -11,6 +10,7 @@ class Test:
     name: str
     career: str
     disciplines: list = field(default_factory=list)
+    has_images: bool = False
 
     def add_discipline(self, discipline):
         if discipline in self.disciplines:
@@ -31,14 +31,22 @@ class Test:
         for discipline in self.disciplines:
             discipline.fill_empty_questions()
 
+    def set_has_images(self):
+        for d in self.disciplines:
+            d.set_has_images()
+        self.has_images = any(d.has_images for d in self.disciplines)
+
+        return self.has_images
+
 @dataclass
 class Discipline_dataclass:
     name: str
     num_questions: int
     questions: list[Question_dataclass] = field(default_factory=list)
     starting_position: int = 0 # the number of the first question in this discipline, in the test
+    has_images: bool = False
 
-    def add_question(self, question):       
+    def add_question(self, question):
         if len(self.questions) >= self.num_questions:
             return False
 
@@ -52,6 +60,13 @@ class Discipline_dataclass:
             empty_question = Question_dataclass.gen_empty()
             self.add_question(empty_question)
 
+    def set_has_images(self):
+        for q in self.questions:
+            q.set_has_images()
+        self.has_images = any(q.has_images for q in self.questions)
+
+        return self.has_images
+
 @dataclass
 class Question_dataclass:
     body: str
@@ -63,6 +78,7 @@ class Question_dataclass:
     correct_choice: str
     relative_position: int = 0
     abs_pos: int = 0
+    has_images: bool = False
 
     question_image: str | None = None
     choice_a_image: str | None = None
@@ -70,6 +86,18 @@ class Question_dataclass:
     choice_c_image: str | None = None
     choice_d_image: str | None = None
     choice_e_image: str | None = None
+
+    def set_has_images(self):
+        self.has_images = any((
+            self.question_image,
+            self.choice_a_image,
+            self.choice_b_image,
+            self.choice_c_image,
+            self.choice_d_image,
+            self.choice_e_image,
+        ))
+
+        return self.has_images
 
     @classmethod
     def gen_empty(cls):
