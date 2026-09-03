@@ -6,7 +6,7 @@ from lxml import html
 import re
 
 
-def tinymce_to_plain_text(value: str) -> str:
+def tinymce_to_plain_text(value: str, image=None) -> str:
     """
     Convert TinyMCE HTML into plain text.
 
@@ -25,11 +25,7 @@ def tinymce_to_plain_text(value: str) -> str:
     value = unescape(value)
 
     # Parse HTML
-    root = html.fromstring(
-        f"<div>{value}</div>"
-    )
-
-    # Extract text while preserving some breaks
+    root = html.fromstring(f"<div>{value}</div>")
     text = root.text_content()
 
     # Normalize whitespace
@@ -45,7 +41,19 @@ def tinymce_to_plain_text(value: str) -> str:
         text,
     )
 
-    return text.strip()
+    text = text.strip()
+
+    if text and text[-1] not in (".", "?", "!", ":", ";", ","):
+        text += "."
+
+    if image:
+        text += (
+            "\n"
+            "[A imagem referente a esta questão encontra-se no documento anexo.]"
+        )
+
+
+    return text
 
 def html_to_richtext(source):
     root = html.fragment_fromstring(
