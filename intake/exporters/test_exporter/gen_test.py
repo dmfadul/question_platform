@@ -38,7 +38,7 @@ def generate_test(
 ) -> Test:
     output_path = f"tests_output/PROVA_{career}-{name}.docx"
     img_output_path = (
-        f"tests_output/PROVA_{career}-{name}_images.docx"
+        f"tests_output/IMAGENS_{career}-{name}.docx"
     )
 
     test = Test(
@@ -207,7 +207,7 @@ def generate_test(
                         "image": InlineImage(
                             image_doc,
                             image_path,
-                            width=Mm(150),
+                            width=Mm(50),
                         ),
                     })
 
